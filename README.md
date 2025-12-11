@@ -7,7 +7,7 @@
 [](https://www.sqlite.org/)
 [](https://vercel.com/)
 
-**[🔴 View Live Demo](https://www.google.com/search?q=https://%5BYOUR_VERCEL_LINK%5D.vercel.app)** | **[⚙️ Backend API](https://www.google.com/search?q=https://%5BYOUR_PYTHONANYWHERE_LINK%5D.pythonanywhere.com)**
+**[🔴 View Live Demo](https://www.google.com/search?q=https://%5BYOUR_VERCEL_LINK%5D.vercel.app)** | **[⚙️ Backend API](https://www.google.com/search?q=https://%5Bbhuvaneshd32%5D.pythonanywhere.com)**
 
 -----
 
