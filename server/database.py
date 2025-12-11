@@ -47,34 +47,48 @@ def init_db():
             )
         ''')
 
-        # 2. Force Admin Reset Logic
+        # ---------------------------------------------------------
+        # 2. SEED USERS (Admin + Member)
+        # ---------------------------------------------------------
+
+        # --- SEED ADMIN ---
         admin_key = "admin-secret-key-123"
-        
-        # Check if Admin exists
         cursor.execute("SELECT id FROM users WHERE role = 'admin' LIMIT 1")
         admin_user = cursor.fetchone()
 
         if admin_user:
-            # Admin exists -> Reset key to ensure you can login
-            print(f"🔄 Admin found. Resetting API Key to: {admin_key}")
+            print(f"🔄 Admin found. Resetting Key...")
             cursor.execute("UPDATE users SET api_key = ?, credits = 9999 WHERE id = ?", (admin_key, admin_user['id']))
         else:
-            # Admin missing -> Create new one
-            print(f"✅ Creating Default Admin with Key: {admin_key}")
+            print(f"✅ Creating Super Admin...")
             cursor.execute(
                 'INSERT INTO users (username, api_key, role, credits) VALUES (?, ?, ?, ?)', 
                 ('SuperAdmin', admin_key, 'admin', 9999)
             )
-            # Seed default rules
+            # Default Rules
             cursor.execute("INSERT INTO rules (pattern, action) VALUES (?, ?)", ('^ls -la$', 'AUTO_ACCEPT'))
             cursor.execute("INSERT INTO rules (pattern, action) VALUES (?, ?)", ('rm -rf', 'AUTO_REJECT'))
+
+        # --- SEED JUNIOR MEMBER (NEW!) ---
+        member_key = "member-key-456"
+        cursor.execute("SELECT id FROM users WHERE role = 'member' LIMIT 1")
+        member_user = cursor.fetchone()
+
+        if member_user:
+            print(f"🔄 Member found. Resetting Key...")
+            cursor.execute("UPDATE users SET api_key = ?, credits = 50 WHERE id = ?", (member_key, member_user['id']))
+        else:
+            print(f"✅ Creating Junior Member...")
+            cursor.execute(
+                'INSERT INTO users (username, api_key, role, credits) VALUES (?, ?, ?, ?)', 
+                ('Junior Dev', member_key, 'member', 50)
+            )
 
         conn.commit()
         
     except Exception as e:
         print(f"❌ Database Initialization Error: {e}")
     finally:
-        # Always close the connection at the very end
         if 'conn' in locals():
             conn.close()
 
