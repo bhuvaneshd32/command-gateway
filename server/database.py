@@ -11,7 +11,7 @@ def init_db():
     
     print("Checking database...")
 
-    # 1. Create Users Table
+    # 1. Create Tables (Same as before)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -22,7 +22,6 @@ def init_db():
         )
     ''')
 
-    # 2. Create Rules Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS rules (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,7 +30,6 @@ def init_db():
         )
     ''')
 
-    # 3. Create Audit Logs Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS audit_logs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,6 +40,31 @@ def init_db():
             FOREIGN KEY(user_id) REFERENCES users(id)
         )
     ''')
+
+    # --- THE FIX: FORCE ADMIN RESET ---
+    admin_key = "admin-secret-key-123"
+    
+    # Check if Admin exists
+    cursor.execute("SELECT id FROM users WHERE role = 'admin' LIMIT 1")
+    admin_user = cursor.fetchone()
+
+    if admin_user:
+        # Admin exists -> UPDATE their key to be sure it matches
+        print(f"🔄 Admin found. Resetting API Key to: {admin_key}")
+        cursor.execute("UPDATE users SET api_key = ?, credits = 9999 WHERE id = ?", (admin_key, admin_user[0]))
+    else:
+        # Admin missing -> CREATE them
+        print(f"✅ Creating Default Admin with Key: {admin_key}")
+        cursor.execute(
+            'INSERT INTO users (username, api_key, role, credits) VALUES (?, ?, ?, ?)', 
+            ('SuperAdmin', admin_key, 'admin', 9999)
+        )
+        # Seed default rules only if new
+        cursor.execute("INSERT INTO rules (pattern, action) VALUES (?, ?)", ('^ls -la$', 'AUTO_ACCEPT'))
+        cursor.execute("INSERT INTO rules (pattern, action) VALUES (?, ?)", ('rm -rf', 'AUTO_REJECT'))
+
+    conn.commit()
+    conn.close()
 
     # 4. Seed Default Admin (Only if table is empty)
     cursor.execute('SELECT count(*) FROM users')
