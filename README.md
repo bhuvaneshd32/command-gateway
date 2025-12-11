@@ -7,7 +7,7 @@
 [](https://www.sqlite.org/)
 [](https://vercel.com/)
 
-**[🔴 View Live Demo](https://www.google.com/search?q=https://%5BYOUR_VERCEL_LINK%5D.vercel.app)** |
+**[🔴 View Live Demo](https://www.google.com/search?q=https://%5BYOUR_VERCEL_LINK%5D.vercel.app)** 
 
 -----
 
